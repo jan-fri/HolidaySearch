@@ -4,7 +4,22 @@
     {
         public string ReadFileContent(string fileName)
         {
-            throw new NotImplementedException();
+            var root = FindSolutionDirectory();
+            var flightListSource = Path.Combine(root, "HolidaySearch", "Content", fileName);
+            return File.ReadAllText(flightListSource);
+        }
+
+        private string FindSolutionDirectory()
+        {
+            var directory = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+            while (directory != null && !directory.GetFiles("HolidaySearch.sln").Any())
+            {
+                directory = directory.Parent;
+            }
+            if (directory == null)
+                throw new Exception("HolidaySearch was not found");
+
+            return directory.FullName;
         }
     }
 }
