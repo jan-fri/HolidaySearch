@@ -1,6 +1,12 @@
-﻿namespace HolidaySearch.Repositories
+﻿using HolidaySearch.Entities;
+
+namespace HolidaySearch.Repositories
 {
-    public class HotelRepository
+    public class HotelRepository : IHotelRepository
     {
+        public List<Hotel> GetHotelList()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
