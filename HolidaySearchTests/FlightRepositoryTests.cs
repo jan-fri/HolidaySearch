@@ -9,7 +9,8 @@ namespace HolidaySearchTests
         public void DeserializeFlightsJson_CheckMappings()
         {
             //Arrange
-            var flightRepo = new FlightRepository(repoHelperMock);
+            var repoHelper = new RepositoryHelper();
+            var flightRepo = new FlightRepository(repoHelper);
 
             //Act
             var allFlights = flightRepo.GetFlightList();
@@ -20,7 +21,7 @@ namespace HolidaySearchTests
             Assert.True(allFlights.All(x => !string.IsNullOrEmpty(x.From)));
             Assert.True(allFlights.All(x => !string.IsNullOrEmpty(x.To)));
             Assert.True(allFlights.All(x => x.Price.GetType() == typeof(decimal)));
-            Assert.True(allFlights.All(x => x.DepartureDate.GetType() == typeof(DateOnly)));
+            Assert.True(allFlights.All(x => x.DepartureDate.GetType() == typeof(DateTime)));
         }
     }
 }

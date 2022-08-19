@@ -1,4 +1,5 @@
-﻿using HolidaySearch.Repositories;
+﻿using HolidaySearch.Helpers;
+using HolidaySearch.Repositories;
 
 namespace HolidaySearchTests
 {
@@ -8,7 +9,8 @@ namespace HolidaySearchTests
         public void DeserializeHotelsJson_CheckMappings()
         {
             //Arrange
-            var hotelRepo = new HotelRepository();
+            var repoHelper = new RepositoryHelper();
+            var hotelRepo = new HotelRepository(repoHelper);
 
             //Act
             var allHotels = hotelRepo.GetHotelList();
@@ -16,9 +18,9 @@ namespace HolidaySearchTests
             //Assert
             Assert.True(allHotels.All(x => x.Id.GetType() == typeof(int)));
             Assert.True(allHotels.All(x => !string.IsNullOrEmpty(x.Name)));
-            Assert.True(allHotels.All(x => x.ArrivalDate.GetType() == typeof(DateOnly)));
+            Assert.True(allHotels.All(x => x.ArrivalDate.GetType() == typeof(DateTime)));
             Assert.True(allHotels.All(x => x.PricePerNight.GetType() == typeof(decimal)));
-            Assert.True(allHotels.All(x => !string.IsNullOrEmpty(x.LocalAirports)));
+            Assert.True(allHotels.All(x => x.LocalAirports.All(y => !string.IsNullOrEmpty(y))));
             Assert.True(allHotels.All(x => x.Nights.GetType() == typeof(int)));
         }
     }
