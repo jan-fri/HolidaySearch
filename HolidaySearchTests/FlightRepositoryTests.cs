@@ -1,6 +1,6 @@
 namespace HolidaySearchTests
 {
-    public class UnitTest1
+    public class FlightRepositoryTests
     {
         [Fact]
         public void Test1()
