@@ -1,4 +1,3 @@
-using HolidaySearch.Entities;
 using HolidaySearch.Helpers;
 using HolidaySearch.Repositories;
 using Moq;
@@ -37,7 +36,7 @@ namespace HolidaySearchTests
             repoHelperMock.Setup(x => x.SetJsonSerializerOptions()).Returns(repoHelper.SetJsonSerializerOptions());
             var flightRepo = new FlightRepository(repoHelperMock.Object);
             var departureDate = new DateTime(2023, 07, 01);
-            var departingFrom = "MAN";
+            List<string> departingFrom = new List<string> { "MAN" };
             var travelingTo = "AGP";
 
             //Act
@@ -46,13 +45,13 @@ namespace HolidaySearchTests
             //Assert
             Assert.NotNull(results);
             Assert.Equal(3, results.Count);
-            Assert.True(results.All(x => x.DepartingFrom == departingFrom));
+            Assert.True(results.All(x => x.DepartingFrom == departingFrom[0]));
             Assert.True(results.All(x => x.TravalingTo == travelingTo));
             Assert.True(results.All(x => x.DepartureDate >= departureDate));
         }
 
         [Fact]
-        public void SearchFlights_ReturnList_SortedByDepartureDate()
+        public void SearchFlights_ReturnFlights_SortedByDepartureDate()
         {
             //Arrange
             var repoHelper = new RepositoryHelper();
@@ -62,15 +61,59 @@ namespace HolidaySearchTests
             repoHelperMock.Setup(x => x.SetJsonSerializerOptions()).Returns(repoHelper.SetJsonSerializerOptions());
             var flightRepo = new FlightRepository(repoHelperMock.Object);
             var departureDate = new DateTime(2023, 07, 01);
-            var departingFrom = "MAN";
+            List<string> departingFrom = new List<string> { "MAN" };
             var travelingTo = "AGP";
 
             //Act
             var results = flightRepo.SearchFlights(departureDate, departingFrom, travelingTo);
 
             //Assert
-            Assert.True(results.Count > 1);
             Assert.True(results.First().Id == 3);
+        }
+
+
+        [Fact]
+        public void SearchFlights_WhenAnyAirport_ReturnFlightsWithAnyDepartedFrom()
+        {
+            //Arrange
+            var repoHelper = new RepositoryHelper();
+            var repoHelperMock = new Mock<IRepositoryHelper>();
+            var flights = GenerateFlightJson();
+            repoHelperMock.Setup(x => x.ReadFileContent(It.IsAny<string>())).Returns(flights);
+            repoHelperMock.Setup(x => x.SetJsonSerializerOptions()).Returns(repoHelper.SetJsonSerializerOptions());
+            var flightRepo = new FlightRepository(repoHelperMock.Object);
+            var departureDate = new DateTime(2023, 07, 03);
+            List<string> departingFrom = new List<string>();
+            var travelingTo = "AGP";
+
+            //Act
+            var results = flightRepo.SearchFlights(departureDate, departingFrom, travelingTo);
+
+            //Assert
+            Assert.True(results.First().Id == 7);
+        }
+
+        [Fact]
+        public void SearchFlights_WhenAnyLondonAirport_ReturnFlightsWithAnyLondonAirport()
+        {
+            //Arrange
+            var repoHelper = new RepositoryHelper();
+            var repoHelperMock = new Mock<IRepositoryHelper>();
+            var flights = GenerateFlightJson();
+            repoHelperMock.Setup(x => x.ReadFileContent(It.IsAny<string>())).Returns(flights);
+            repoHelperMock.Setup(x => x.SetJsonSerializerOptions()).Returns(repoHelper.SetJsonSerializerOptions());
+            var flightRepo = new FlightRepository(repoHelperMock.Object);
+            var departureDate = new DateTime(2023, 07, 03);
+            List<string> departingFrom = new List<string> { "LTN", "LGW"};
+            var travelingTo = "AGP";
+
+            //Act
+            var results = flightRepo.SearchFlights(departureDate, departingFrom, travelingTo);
+
+            //Assert
+            Assert.Equal(2, results.Count);
+            Assert.True(results.First().Id == 7);
+            Assert.True(results.Last().Id == 8);
         }
 
         private string GenerateFlightJson()
@@ -111,6 +154,18 @@ namespace HolidaySearchTests
                 ""from"": ""MAN"",
                 ""to"": ""AGP"",
                 ""departure_date"": ""2023-07-02""
+            },
+            {
+                ""id"": 7,
+                ""from"": ""LGW"",
+                ""to"": ""AGP"",
+                ""departure_date"": ""2023-07-03""
+            },
+            {
+                ""id"": 8,
+                ""from"": ""LTN"",
+                ""to"": ""AGP"",
+                ""departure_date"": ""2023-07-04""
             }]";
         }
     }

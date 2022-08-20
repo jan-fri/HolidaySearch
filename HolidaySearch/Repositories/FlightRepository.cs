@@ -18,12 +18,29 @@ namespace HolidaySearch.Repositories
             return JsonSerializer.Deserialize<List<Flight>>(flightListSource, _repositoryHelper.SetJsonSerializerOptions());
         }
 
-        public List<Flight> SearchFlights(DateTime departureDate, string departingFrom, string travelingTo)
+        public List<Flight> SearchFlights(DateTime departureDate, List<string> departingFrom, string travelingTo)
         {
-            var flights = GetFlightList();
-            return flights.Where(x => x.DepartureDate >= departureDate && x.DepartingFrom == departingFrom && x.TravalingTo == travelingTo)
-                .OrderBy(x => x.DepartureDate)
-                .ToList();
+            List<Flight> matchingFlights = new List<Flight>();
+            var allFlights = GetFlightList();
+            var selectedFlights = allFlights.Where(x => x.DepartureDate >= departureDate && x.TravalingTo == travelingTo);
+
+            if (selectedFlights != null && selectedFlights.Any())
+            {
+                if (!departingFrom.Any())
+                {
+                    matchingFlights.AddRange(selectedFlights);
+                }
+
+                foreach (var airport in departingFrom)
+                {
+                    var matchingAirports = selectedFlights.Where(x => x.DepartingFrom == airport);
+                    matchingFlights.AddRange(matchingAirports);  
+                }
+
+                matchingFlights = matchingFlights.OrderBy(x => x.DepartureDate).ToList();
+            }
+
+            return matchingFlights;
         }
     }
 }
