@@ -20,7 +20,10 @@ namespace HolidaySearch.Repositories
 
         public List<Flight> SearchFlights(DateTime departureDate, string departingFrom, string travelingTo)
         {
-            throw new NotImplementedException();
+            var flights = GetFlightList();
+            return flights.Where(x => x.DepartureDate >= departureDate && x.DepartingFrom == departingFrom && x.TravalingTo == travelingTo)
+                .OrderBy(x => x.DepartureDate)
+                .ToList();
         }
     }
 }

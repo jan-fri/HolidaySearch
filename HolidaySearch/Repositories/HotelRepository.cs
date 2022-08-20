@@ -20,7 +20,10 @@ namespace HolidaySearch.Repositories
 
         public List<Hotel> SearchHotels(DateTime arrivalDate, string localAirport, int duration)
         {
-            throw new NotImplementedException();
+            var hotels = GetHotelList();
+            return hotels.Where(x => x.ArrivalDate >= arrivalDate && x.LocalAirports.Contains(localAirport) && x.Nights == duration)
+                .OrderBy(x => x.ArrivalDate)
+                .ToList();
         }
     }
 }

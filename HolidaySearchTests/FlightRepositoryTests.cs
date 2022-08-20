@@ -1,5 +1,7 @@
+using HolidaySearch.Entities;
 using HolidaySearch.Helpers;
 using HolidaySearch.Repositories;
+using Moq;
 
 namespace HolidaySearchTests
 {
@@ -29,7 +31,11 @@ namespace HolidaySearchTests
         {
             //Arrange
             var repoHelper = new RepositoryHelper();
-            var flightRepo = new FlightRepository(repoHelper);
+            var repoHelperMock = new Mock<IRepositoryHelper>();
+            var flights = GenerateFlightJson();
+            repoHelperMock.Setup(x => x.ReadFileContent(It.IsAny<string>())).Returns(flights);
+            repoHelperMock.Setup(x => x.SetJsonSerializerOptions()).Returns(repoHelper.SetJsonSerializerOptions());
+            var flightRepo = new FlightRepository(repoHelperMock.Object);
             var departureDate = new DateTime(2023, 07, 01);
             var departingFrom = "MAN";
             var travelingTo = "AGP";
@@ -39,10 +45,73 @@ namespace HolidaySearchTests
 
             //Assert
             Assert.NotNull(results);
+            Assert.Equal(3, results.Count);
             Assert.True(results.All(x => x.DepartingFrom == departingFrom));
             Assert.True(results.All(x => x.TravalingTo == travelingTo));
             Assert.True(results.All(x => x.DepartureDate >= departureDate));
         }
 
+        [Fact]
+        public void SearchFlights_ReturnList_SortedByDepartureDate()
+        {
+            //Arrange
+            var repoHelper = new RepositoryHelper();
+            var repoHelperMock = new Mock<IRepositoryHelper>();
+            var flights = GenerateFlightJson();
+            repoHelperMock.Setup(x => x.ReadFileContent(It.IsAny<string>())).Returns(flights);
+            repoHelperMock.Setup(x => x.SetJsonSerializerOptions()).Returns(repoHelper.SetJsonSerializerOptions());
+            var flightRepo = new FlightRepository(repoHelperMock.Object);
+            var departureDate = new DateTime(2023, 07, 01);
+            var departingFrom = "MAN";
+            var travelingTo = "AGP";
+
+            //Act
+            var results = flightRepo.SearchFlights(departureDate, departingFrom, travelingTo);
+
+            //Assert
+            Assert.True(results.Count > 1);
+            Assert.True(results.First().Id == 3);
+        }
+
+        private string GenerateFlightJson()
+        {
+            return @"[
+            {
+                ""id"": 1,
+                ""from"": ""MAN"",
+                ""to"": ""AGP"",
+                ""departure_date"": ""2023-08-01""
+            },
+            {
+                ""id"": 2,
+                ""from"": ""MAN"",
+                ""to"": ""AGP"",
+                ""departure_date"": ""2023-06-01""
+            },
+            {
+                ""id"": 3,
+                ""from"": ""MAN"",
+                ""to"": ""AGP"",
+                ""departure_date"": ""2023-07-01""
+            },
+            {
+                ""id"": 4,
+                ""from"": ""LGW"",
+                ""to"": ""AGP"",
+                ""departure_date"": ""2023-07-01""
+            },
+            {
+                ""id"": 5,
+                ""from"": ""MAN"",
+                ""to"": ""LPA"",
+                ""departure_date"": ""2023-07-01""
+            },
+            {
+                ""id"": 6,
+                ""from"": ""MAN"",
+                ""to"": ""AGP"",
+                ""departure_date"": ""2023-07-02""
+            }]";
+        }
     }
 }
