@@ -49,15 +49,15 @@ namespace HolidaySearchTests
             HolidaySearchService holidaySearchService = SetupHolidayService();
             List<string> departingFrom = new List<string>();
             var travelingTo = "LPA";
-            var departingDate = new DateTime(2023, 06, 15);
+            var departingDate = new DateTime(2022, 11, 10);
             var duration = 14;
 
             //Act
             var results = holidaySearchService.SearchHoliday(departingFrom, travelingTo, departingDate, duration);
 
             //Assert
-            Assert.Equal(6, results.First().Flight.Id);
-            Assert.Equal(5, results.First().Hotel.Id);
+            Assert.Equal(7, results.First().Flight.Id);
+            Assert.Equal(6, results.First().Hotel.Id);
         }
 
         private HolidaySearchService SetupHolidayService()

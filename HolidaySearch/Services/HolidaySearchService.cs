@@ -16,7 +16,16 @@ namespace HolidaySearch.Services
 
         public List<HolidaySearchReslut> SearchHoliday(List<string> departingFrom, string travelingTo, DateTime departureDate, int duration)
         {
-            throw new NotImplementedException();
+            var searchResults = new List<HolidaySearchReslut>();
+            var flights = _flightRepository.SearchFlights(departureDate, departingFrom, travelingTo);
+            var hotels = _hotelRepository.SearchHotels(departureDate, travelingTo, duration);
+
+            if (hotels != null && hotels.Any() && flights != null && flights.Any())
+            {
+                hotels.ForEach(hotel => flights.ForEach(flight => searchResults.Add(new HolidaySearchReslut { Flight = flight, Hotel = hotel })));
+            }
+
+            return searchResults.ToList();
         }
     }
 }
