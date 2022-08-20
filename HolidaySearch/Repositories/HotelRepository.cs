@@ -11,16 +11,16 @@ namespace HolidaySearch.Repositories
         {
             _repositoryHelper = repositoryHelper;
         }
+
         public List<Hotel> GetHotelList()
         {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                WriteIndented = true
-            };
-
             var flightListSource = _repositoryHelper.ReadFileContent("hotels.json");
-            return JsonSerializer.Deserialize<List<Hotel>>(flightListSource, options);
+            return JsonSerializer.Deserialize<List<Hotel>>(flightListSource, _repositoryHelper.SetJsonSerializerOptions());
+        }
+
+        public List<Hotel> SearchHotels(DateTime arrivalDate, string localAirport, int duration)
+        {
+            throw new NotImplementedException();
         }
     }
 }

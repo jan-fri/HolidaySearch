@@ -1,4 +1,6 @@
-﻿namespace HolidaySearch.Helpers
+﻿using System.Text.Json;
+
+namespace HolidaySearch.Helpers
 {
     public class RepositoryHelper : IRepositoryHelper
     {
@@ -20,6 +22,15 @@
                 throw new Exception("HolidaySearch was not found");
 
             return directory.FullName;
+        }
+
+        public JsonSerializerOptions SetJsonSerializerOptions()
+        {
+            return new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = true
+            };
         }
     }
 }

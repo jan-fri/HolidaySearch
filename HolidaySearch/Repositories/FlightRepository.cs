@@ -14,14 +14,13 @@ namespace HolidaySearch.Repositories
 
         public List<Flight> GetFlightList()
         {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                WriteIndented = true
-            };
-
             var flightListSource = _repositoryHelper.ReadFileContent("flights.json");
-            return JsonSerializer.Deserialize<List<Flight>>(flightListSource, options);
+            return JsonSerializer.Deserialize<List<Flight>>(flightListSource, _repositoryHelper.SetJsonSerializerOptions());
+        }
+
+        public List<Flight> SearchFlights(DateTime departureDate, string departingFrom, string travelingTo)
+        {
+            throw new NotImplementedException();
         }
     }
 }
